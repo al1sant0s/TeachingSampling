@@ -1,12 +1,77 @@
 #' @export
+#'
+#' @title
+#' Sample Probabilities under With-Replacement Sampling
+#' @description
+#' Computes the probability of each possible outcome in the with-replacement
+#' sampling support, given unit selection probabilities \code{pk}.
+#' @return
+#' A numeric vector of length \code{choose(N+m-1, m)} with the probability
+#' of each distinct unordered outcome in the with-replacement support.
+#' @details
+#' For each distinct unordered outcome (multiset) in the support enumerated
+#' by \code{\link{nk}}, the probability is computed as a multinomial
+#' probability:
+#' \deqn{p(s) = \frac{m!}{\prod_k n_k!} \prod_k p_k^{n_k}}
+#' where \eqn{n_k} is the number of times unit \eqn{k} appears in outcome
+#' \eqn{s} and \eqn{p_k} is the selection probability of unit \eqn{k}.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param N Population size.
+#' @param m Number of draws (sample size with replacement).
+#' @param pk Vector of length \code{N} with selection probabilities for each
+#'   unit. Must sum to 1.
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{nk}}, \code{\link{SupportWR}}, \code{\link{S.PPS}}
+#'
+#' @examples
+#' ############
+#' ## Example 1
+#' ############
+#' # With replacement simple random sampling
+#' # Vector U contains the label of a population of size N=5
+#' U <- c("Yves", "Ken", "Erik", "Sharon", "Leslie")
+#' # Vector pk is the sel?ection probability of the units in the finite population
+#' pk <- c(0.2, 0.2, 0.2, 0.2, 0.2)
+#' sum(pk)
+#' N <- length(pk)
+#' m <- 3
+#' # The smapling design
+#' p <- p.WR(N, m, pk)
+#' p
+#' sum(p)
+#'
+#' ############
+#' ## Example 2
+#' ############
+#' # With replacement PPS random sampling
+#' # Vector U contains the label of a population of size N=5
+#' U <- c("Yves", "Ken", "Erik", "Sharon", "Leslie")
+#' # Vector x is the auxiliary information and y is the variables of interest
+#' x<-c(32, 34, 46, 89, 35)
+#' y<-c(52, 60, 75, 100, 50)
+#' # Vector pk is the sel?ection probability of the units in the finite population
+#' pk <- x/sum(x)
+#' sum(pk)
+#' N <- length(pk)
+#' m <- 3
+#' # The smapling design
+#' p <- p.WR(N, m, pk)
+#' p
+#' sum(p)
 
-p.WR <- function(N, m, pk){
-p <- rep(0,N)
-I <- nk(N,m)
-N <- dim(I)[1]
-for(i in 1:N){
-ni <- c(I[i,])
-p[i] <- dmultinom(ni, prob=pk)
-}
-p
+p.WR <- function(N, m, pk) {
+  p  <- rep(0, N)
+  I  <- nk(N, m)
+  N  <- dim(I)[1]
+  for (i in 1:N) {
+    ni   <- c(I[i, ])
+    p[i] <- dmultinom(ni, prob = pk)
+  }
+  p
 }

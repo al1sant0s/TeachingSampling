@@ -14,7 +14,8 @@ E.Trim(dk, L, U)
 \item{U}{Upper bound for weights.}
 }
 \value{
-This function returns a vector of trimmed weights.
+A numeric vector of trimmed sampling weights with the same length as
+\code{dk} and the same sum as the original weights.
 }
 \description{
 This function performs a method of trimming sampling weights based on the 
@@ -23,7 +24,11 @@ weights were not trimmed. This way, the sum of the timmed sampling weights
 remains the same as the original weights.
 }
 \details{
-The function returns a vector of trimmed sampling weigths.
+Weights below \code{L} or above \code{U} are replaced by the respective
+bound. The net weight lost by trimming is then redistributed evenly among
+all units whose weights were not trimmed. The process iterates until no
+weight falls outside \code{[L, U]}, ensuring that the sum of the trimmed
+weights equals the sum of the original weights.
 }
 \examples{
 
@@ -55,6 +60,6 @@ Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
 y estimacion de parametros}. Editorial Universidad Santo Tomas.
 }
 \author{
-Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com> with contributions
-from Javier Nunez <javier_nunez at inec.gob.ec>
+Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com> with
+  contributions from Javier Nunez <javier_nunez at inec.gob.ec>
 }

@@ -1,16 +1,49 @@
 #' @export
+#'
+#' @title
+#' Sample Selection Indicator for With Replacement Sampling Designs
+#' @description
+#' Constructs the frequency matrix of the with-replacement sampling support
+#' for a population of size \code{N} and \code{m} draws. Each row corresponds
+#' to one possible outcome and each column to one population unit, with entry
+#' \eqn{(s, k)} equal to the number of times unit \eqn{k} was selected in
+#' outcome \eqn{s}.
+#' @return
+#' An integer matrix of dimension \code{choose(N+m-1, m) x N}, where entry
+#' \eqn{(s, k)} is the frequency of unit \eqn{k} in outcome \eqn{s}.
+#' @details
+#' Unlike \code{\link{IkWR}}, which records only whether a unit was selected,
+#' this function records how many times each unit was selected. This is needed
+#' for with-replacement estimators based on selection frequencies.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param N Population size. Keep small due to combinatorial growth.
+#' @param m Number of draws (sample size with replacement).
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{IkWR}}, \code{\link{SupportWR}}, \code{\link{p.WR}}
+#'
+#' @examples
+#' U <- c("Yves", "Ken", "Erik", "Sharon", "Leslie")
+#' N <- length(U)
+#' m <- 2
+#' # Frequency matrix for with-replacement sampling
+#' nk(N, m)
 
-nk <- function(N, m)
-{
-Q <- SupportWR(N, m, ID = FALSE)
-I <- matrix(0, choose(N+m-1, m), N)
-for (i in 1:m) {
-for (j in 1:choose(N+m-1, m)) {
-for (k in 1:N) {
-if (Q[j, i] == k)
-I[j, k] <- sum(as.double(Q[j,]==k))
-}
-}
-}
-I
+nk <- function(N, m) {
+  Q <- SupportWR(N, m, ID = FALSE)
+  I <- matrix(0, choose(N + m - 1, m), N)
+  for (i in 1:m) {
+    for (j in 1:choose(N + m - 1, m)) {
+      for (k in 1:N) {
+        if (Q[j, i] == k)
+          I[j, k] <- sum(as.double(Q[j, ] == k))
+      }
+    }
+  }
+  I
 }

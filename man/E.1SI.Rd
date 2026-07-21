@@ -7,28 +7,32 @@
 E.1SI(NI, nI, y, PSU)
 }
 \arguments{
-\item{NI}{Population size of Primary Sampling Units.}
+\item{NI}{Population size of Primary Sampling Units (PSUs).}
 
-\item{nI}{Sample size of Primary Sampling Units.}
+\item{nI}{Sample size of Primary Sampling Units (PSUs).}
 
-\item{y}{Vector, matrix or data frame containig the recollected 
-information of the variables of interest for every unit in the 
-selected sample.}
+\item{y}{Vector, matrix or data frame containing the values of the
+variables of interest for every unit in the selected sample.}
 
-\item{PSU}{Vector identifying the membership to the strata of 
-each unit in the population.}
+\item{PSU}{Vector identifying the PSU membership of each unit in the sample.}
 }
 \value{
-This function returns the estimation of the population total of 
-every single variable of interest, its estimated standard error 
-and its estimated coefficient of variation.
+A matrix with four rows and one column per variable of interest:
+\itemize{
+  \item \code{Estimation}: Estimated population total.
+  \item \code{Standard Error}: Estimated standard error of the total.
+  \item \code{CVE}: Estimated coefficient of variation (in percentage).
+  \item \code{DEFF}: Design effect with respect to simple random sampling.
+}
 }
 \description{
 This function computes the Horvitz-Thompson estimator of the population total according to a single stage sampling design.
 }
 \details{
-The function returns a data matrix whose columns correspond to 
-the estimated parameters of the variables of interest.
+The estimator aggregates unit values within each selected PSU into cluster
+totals, then applies the expansion estimator across PSUs. The variance is
+estimated from the variability of the cluster totals under a simple random
+sampling framework at the PSU level.
 }
 \examples{
 
@@ -63,5 +67,5 @@ Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas y es
 \code{\link{E.2SI}}
 }
 \author{
-Hugo Andres Gutierrez Rojas <hugogutierrez at gmail.com>
+Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
 }

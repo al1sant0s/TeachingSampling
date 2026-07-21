@@ -7,12 +7,17 @@
 #' evenly redistribution of the net ammount of weight loss among units whose
 #' weights were not trimmed. This way, the sum of the timmed sampling weights 
 #' remains the same as the original weights.
-#' @return 
-#' This function returns a vector of trimmed weights.
+#' @return
+#' A numeric vector of trimmed sampling weights with the same length as
+#' \code{dk} and the same sum as the original weights.
 #' @details
-#' The function returns a vector of trimmed sampling weigths.
-#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com> with contributions
-#' from Javier Nunez <javier_nunez at inec.gob.ec>
+#' Weights below \code{L} or above \code{U} are replaced by the respective
+#' bound. The net weight lost by trimming is then redistributed evenly among
+#' all units whose weights were not trimmed. The process iterates until no
+#' weight falls outside \code{[L, U]}, ensuring that the sum of the trimmed
+#' weights equals the sum of the original weights.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com> with
+#'   contributions from Javier Nunez <javier_nunez at inec.gob.ec>
 #' @param dk Vector of original sampling weights.
 #' @param L Lower bound for weights.
 #' @param U Upper bound for weights.
@@ -51,7 +56,7 @@ E.Trim <- function(dk, L, U){
   dkL <- ifelse(dk < L, L, dk)
   dkLU <- ifelse(dkL > U, U, dkL)
   s <- sum(dk - dkLU)
-
+  
   while (sum(i) != 0) {
     dk <- dkLU + (s/(length(dk) - sum(i))) * (1 - i)
     i <- dk > U | dk < L

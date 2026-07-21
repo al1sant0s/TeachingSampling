@@ -12,21 +12,29 @@
 #' performs well in many sampling designs. The user specifically needs to
 #' declare the variables of interest, the primary sampling units, the strata, and 
 #' the sampling weights for every singlt unit in the sample. 
-#' @return 
-#' This function returns the estimation of the population total of 
-#' every single variable of interest, its estimated standard error 
-#' and its estimated coefficient of variation.
+#' @return
+#' A matrix with four rows and one column per variable of interest:
+#' \itemize{
+#'   \item \code{Estimation}: Estimated population total.
+#'   \item \code{Standard Error}: Estimated standard error using the Ultimate
+#'     Cluster approximation.
+#'   \item \code{CVE}: Estimated coefficient of variation (in percentage).
+#'   \item \code{DEFF}: Design effect with respect to simple random sampling.
+#' }
 #' @details
-#' The function returns a data matrix whose columns correspond to 
-#' the estimated parameters of the variables of interest.
-#' @author Hsugo Andres Gutierrez Rojas <hugogutierrez at gmail.com>
-#' @param S Vector identifying the membership to the strata of each unit in selected sample.
-#' @param PSU Vector identifying the membership to the strata of 
-#' each unit in the population.
+#' The Ultimate Cluster variance approximation collapses the variance
+#' estimation to the first stage of selection. For each stratum, the
+#' weighted total contribution of each PSU is computed, and the variance
+#' is estimated from the variability among those PSU contributions. This
+#' approximation is conservative but robust across many multi-stage designs.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param S Vector identifying the stratum membership of each unit in the
+#'   selected sample.
+#' @param PSU Vector identifying the PSU membership of each unit in the
+#'   selected sample.
 #' @param dk Sampling weights of the units in the sample.
-#' @param y Vector, matrix or data frame containig the recollected 
-#' information of the variables of interest for every unit in the 
-#' selected sample.
+#' @param y Vector, matrix or data frame containing the values of the
+#'   variables of interest for every unit in the selected sample.
 #' 
 #' @references 
 #' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992), \emph{Model Assisted Survey Sampling}. Springer.\cr
@@ -211,5 +219,3 @@ E.UC <- function(S, PSU, dk, y) {
   }
   return(Total)
 }
-
-

@@ -1,26 +1,80 @@
 #' @export
+#'
+#' @title
+#' Cluster Totals for Single-Stage Cluster Sampling
+#' @description
+#' Computes the total of each variable of interest within each cluster
+#' (Primary Sampling Unit) in a single-stage cluster sample.
+#' @return
+#' A matrix with one row per cluster and one column per variable of interest
+#' (plus a first column \code{Ni} with the cluster size). Row names are the
+#' cluster labels.
+#' @details
+#' This function aggregates the sample data by cluster, producing the cluster-
+#' level totals needed for estimation under single-stage cluster sampling.
+#' The output can be passed directly to \code{\link{E.1SI}} or \code{\link{E.SI}}
+#' treating each cluster total as an observation.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param y Vector, matrix or data frame containing the values of the
+#'   variables of interest for every unit in the sample.
+#' @param Cluster Vector identifying the cluster (PSU) membership of each
+#'   unit in the sample.
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{E.1SI}}, \code{\link{E.2SI}}
+#'
+#' @examples
+#' ############
+#' ## Example 1
+#' ############
+#' U <- c("Yves", "Ken", "Erik", "Sharon", "Leslie")
+#' y1 <- c(32, 34, 46, 89, 35)
+#' y2 <- c(1, 1, 1, 0, 0)
+#' y3 <- cbind(y1, y2)
+#' Cluster <- c("C1", "C2", "C1", "C2", "C1")
+#' T.SIC(y1, Cluster)
+#' T.SIC(y3, Cluster)
+#' ############
+#' ## Example 2 - Cluster sampling with Lucy data
+#' ############
+#' data(Lucy)
+#' attach(Lucy)
+#' UI <- c("A", "B", "C", "D", "E")
+#' NI <- length(UI)
+#' nI <- 2
+#' samI <- S.SI(NI, nI)
+#' dataI <- UI[samI]
+#' Lucy1 <- Lucy[which(Zone == dataI[1]), ]
+#' Lucy2 <- Lucy[which(Zone == dataI[2]), ]
+#' LucyI <- rbind(Lucy1, Lucy2)
+#' attach(LucyI)
+#' Cluster <- as.factor(as.integer(Zone))
+#' estima <- data.frame(Income, Employees, Taxes)
+#' Ty <- T.SIC(estima, Cluster)
+#' E.SI(NI, nI, Ty)
 
-T.SIC<-function(y,Cluster){
-  
-  Cluster<-as.factor(Cluster)
-  y<-cbind(1,y)
-  y<-as.data.frame(y)
+T.SIC <- function(y, Cluster) {
+  Cluster <- as.factor(Cluster)
+  y       <- cbind(1, y)
+  y       <- as.data.frame(y)
   names(y)[1] <- "Ni"
-  
-  nI<-length(levels(Cluster))
-  
-  Total<-matrix(NA,nrow=nI,ncol=dim(y)[2],)
-  rownames(Total)<-levels(Cluster)
-  colnames(Total)<-names(y)
-  Cluster<-as.factor(as.integer(Cluster))
-  
-  for(k in 1: nI){
-    e<-which(Cluster==k)
-    ye<-y[e,]
-    ye<-as.matrix(ye)
-    tye<-colSums(ye)
-    Total[k,]<-tye
+  nI      <- length(levels(Cluster))
+  Total   <- matrix(NA, nrow = nI, ncol = dim(y)[2])
+  rownames(Total) <- levels(Cluster)
+  colnames(Total) <- names(y)
+  Cluster <- as.factor(as.integer(Cluster))
+  for (k in 1:nI) {
+    e      <- which(Cluster == k)
+    ye     <- y[e, ]
+    ye     <- as.matrix(ye)
+    tye    <- colSums(ye)
+    Total[k, ] <- tye
   }
-  Total<-as.matrix(Total)
+  Total <- as.matrix(Total)
   return(Total)
 }

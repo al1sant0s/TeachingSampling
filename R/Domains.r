@@ -1,12 +1,84 @@
 #' @export
+#'
+#' @title
+#' Domain Indicator Matrix
+#' @description
+#' Creates a binary indicator matrix that identifies the domain membership
+#' of each unit in the sample. Each column corresponds to one domain
+#' (level of \code{y}) and each row to one unit.
+#' @return
+#' A binary matrix of dimension \code{n x D}, where \code{D} is the number
+#' of domains (levels of \code{y}). Entry \eqn{(k, d) = 1} if unit \eqn{k}
+#' belongs to domain \eqn{d}, and 0 otherwise. Column names are the domain
+#' labels.
+#' @details
+#' This function is useful for domain estimation, where population totals or
+#' means must be estimated for subgroups of the population. The indicator
+#' matrix can be multiplied element-wise with the variable of interest to
+#' restrict estimation to each domain.
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param y A vector (factor or coercible to factor) identifying the domain
+#'   membership of each unit in the sample.
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{E.SI}}, \code{\link{E.STSI}}
+#'
+#' @examples
+#' ############
+#' ## Example 1
+#' ############
+#' # This domain contains only two categories: "yes" and "no"
+#' x <- as.factor(c("yes","yes","yes","no","no","no","no","yes","yes"))
+#' Domains(x)
+#'
+#' ############
+#' ## Example 2
+#' ############
+#' # Uses the Lucy data to draw a random sample of units according 
+#' # to a SI design
+#' data(Lucy)
+#' attach(Lucy)
+#'
+#' N <- dim(Lucy)[1]
+#' n <- 400
+#' sam <- sample(N,n)
+#' # The information about the units in the sample is stored in an object called data
+#' data <- Lucy[sam,]
+#' attach(data)
+#' names(data)
+#' # The variable SPAM is a domain of interest
+#' Doma <- Domains(SPAM)
+#' Doma
+#' # HT estimation of the absolute domain size for every category in the domain
+#' # of interest
+#' E.SI(N,n,Doma)
+#'
+#' ############
+#' ## Example 3
+#' ############
+#' # Following with Example 2... 
+#' # The variables of interest are: Income, Employees and Taxes
+#' # This function allows to estimate the population total of this variables for every 
+#' # category in the domain of interest SPAM 
+#' estima <- data.frame(Income, Employees, Taxes)
+#' SPAM.no <- estima*Doma[,1]
+#' SPAM.yes <- estima*Doma[,2]
+#' E.SI(N,n,SPAM.no)
+#' E.SI(N,n,SPAM.yes)
 
-Domains<-function(y){
-y<-as.factor(y)
-d<-as.double(y)
-n<-length(d)
-Dom<-matrix(0,n,max(d))
-colnames(Dom)<-levels(y)
-for(k in 1: max(d)){
-Dom[,k]<-as.double(d==k)}
-Dom
+Domains <- function(y) {
+  y   <- as.factor(y)
+  d   <- as.double(y)
+  n   <- length(d)
+  Dom <- matrix(0, n, max(d))
+  colnames(Dom) <- levels(y)
+  for (k in 1:max(d)) {
+    Dom[, k] <- as.double(d == k)
+  }
+  Dom
 }

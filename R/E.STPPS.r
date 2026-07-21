@@ -1,45 +1,73 @@
 #' @export
+#'
+#' @title
+#' Estimation of the Population Total under Stratified Probability Proportional to Size Sampling With Replacement
+#' @description
+#' Computes the Hansen-Hurwitz estimator of the population total under a
+#' stratified PPS with-replacement (STPPS) sampling design.
+#' @return
+#' A matrix with four rows and one column per variable of interest:
+#' \itemize{
+#'   \item \code{Estimation}: Estimated population total.
+#'   \item \code{Standard Error}: Estimated standard error.
+#'   \item \code{CVE}: Estimated coefficient of variation (in percentage).
+#'   \item \code{DEFF}: Design effect with respect to simple random sampling.
+#' }
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param y Vector, matrix or data frame of variables of interest.
+#' @param pk Vector of selection probabilities for each draw in the sample.
+#' @param mh Integer vector with the number of draws within each stratum.
+#' @param S Vector identifying the stratum membership of each unit in the sample.
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{S.STPPS}}, \code{\link{E.PPS}}, \code{\link{E.STpiPS}}
+#'
+#' @examples
+#' # Uses the Lucy data to draw a stratified random sample
+#' # according to a PPS design in each stratum
+#' data(Lucy)
+#' attach(Lucy)
+#' m1 <- 83; m2 <- 100; m3 <- 200
+#' mh <- c(m1, m2, m3)
+#' res <- S.STPPS(Level, Income, mh)
+#' sam <- res[, 1]
+#' pk  <- res[, 2]
+#' data <- Lucy[sam, ]
+#' attach(data)
+#' estima <- data.frame(Income, Employees, Taxes)
+#' E.STPPS(estima, pk, mh, Level)
 
-E.STPPS<-function(y,pk,mh,S){
-  S<-as.factor(S)
-  y<-cbind(1,y)
-  y<-as.data.frame(y)
+E.STPPS <- function(y, pk, mh, S) {
+  S <- as.factor(S)
+  S <- as.factor(as.integer(S))
+  y <- cbind(1, y)
+  y <- as.data.frame(y)
   names(y)[1] <- "N"
-  pk<-as.data.frame(pk)
-  
-  Strata<-array(NA,c(4,length(mh)+1,dim(y)[2]))
-  rownames(Strata)=c("Estimation", "Standard Error","CVE","DEFF")
-  colnames(Strata)<-c(levels(S),"Population")
-  dimnames(Strata)[[3]]<-names(y)
-  S<-as.factor(as.integer(S))
-  
-  for(k in 1: length(mh)){
-    e<-which(S==k)
-    ye<-y[e,]
-    pke<-pk[e,]
-    ye<-as.matrix(ye)
-    tye<-matrix(1,1,dim(ye)[1])%*%(ye/pke)/mh[k]
-    tye2<-t(matrix(tye,dim(ye)[2],mh[k]))
-    Vtye<-(1/mh[k])*(1/(mh[k]-1))*colSums((ye/pke-tye2)^2)
-    CVe<-100*sqrt(Vtye)/tye
-    Nh<-(1/mh[k])*sum(1/pke)
-    VMAS<-as.vector((Nh^2)*(1-(mh[k]/Nh))*diag(var(ye))/(mh[k]))
-    DEFF<-Vtye/VMAS
-    Strata[1,,][k,]<-tye
-    Strata[2,,][k,]<-sqrt(Vtye)
-    Strata[3,,][k,]<-CVe
-    Strata[4,,][k,]<-DEFF
+  H <- length(mh)
+  Total <- matrix(NA, nrow = 4, ncol = dim(y)[2])
+  rownames(Total) <- c("Estimation", "Standard Error", "CVE", "DEFF")
+  colnames(Total) <- names(y)
+  N <- sum(1/pk)
+  n <- length(pk)
+  for (k in 1:dim(y)[2]) {
+    ty  <- 0
+    Vty <- 0
+    for (h in 1:H) {
+      yh  <- y[which(S == h), k]
+      pkh <- pk[which(S == h)]
+      HHh <- sum(yh/pkh)/mh[h]
+      ty  <- ty + HHh
+      Vty <- Vty + (1/mh[h]) * (1/(mh[h] - 1)) * sum((yh/pkh - HHh)^2)
+    }
+    CVe  <- 100 * sqrt(Vty)/ty
+    VMAS <- (N^2) * (1 - (n/N)) * var(y[, k])/(n)
+    DEFF <- Vty/VMAS
+    Total[, k] <- c(ty, sqrt(Vty), CVe, DEFF)
   }
-  
-  m=sum(mh)
-  
-  for(i in 1:dim(y)[2]){
-    Strata[1,,][(length(mh)+1),][i]<-sum(Strata[,,i][1,][1:length(mh)])
-    Strata[2,,][(length(mh)+1),][i]<-sqrt(sum(Strata[,,i][2,][1:length(mh)]^2))
-    Strata[3,,][(length(mh)+1),][i]<-100*Strata[2,,][(length(mh)+1),][i]/Strata[1,,][(length(mh)+1),][i]
-    N <- Strata[1, "Population", "N"]
-    VMAST<-(N^2)*(1-(m/N))*var(y[,i])/(m)
-    Strata[4,,][(length(mh)+1),][i]<-(Strata[2,,][(length(mh)+1),][i]^2)/(VMAST)
-  }
-  return(Strata)
+  return(Total)
 }

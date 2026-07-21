@@ -1,15 +1,27 @@
 Package: TeachingSampling
 Type: Package
 Title: Selection of Samples and Parameter Estimation in Finite Population
+Version: 4.2.0
+Date: 2026-06-15
+Authors@R: c(
+    person("Hugo Andres", "Gutierrez Rojas",
+           email = "hagutierrezro@gmail.com",
+           role  = c("aut", "cre")),
+    person("Yury Vanessa", "Ochoa Montes",
+           email = "yury.ochoa@urosario.edu.co",
+           role  = "ctb",
+           comment = "kish_allocation function"))
+Description: Allows the user to draw probabilistic samples and make
+    inferences from a finite population based on several sampling designs,
+    including simple random, systematic, Bernoulli, Poisson, PPS,
+    stratified, and cluster sampling. Provides Horvitz-Thompson,
+    Hansen-Hurwitz, and generalised regression (GREG) estimators of
+    totals, means, ratios, regression coefficients, and quantiles,
+    along with exact and approximate variance estimators.
 License: GPL (>= 2)
-Version: 4.1.1
-Date: 2020-04-21
-Author: Hugo Andres Gutierrez Rojas <hagutierrezro@gmail.com>
-Maintainer: Hugo Andres Gutierrez Rojas <hagutierrezro@gmail.com>
-Depends:
-    R (>= 3.5),
-    dplyr,
-    magrittr
-Description: Allows the user to draw probabilistic samples and make inferences from a finite population based on several sampling designs.
+Depends: R (>= 3.5), dplyr, magrittr
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+NeedsCompilation: no
+URL: https://github.com/psirusteam/TeachingSampling
+BugReports: https://github.com/psirusteam/TeachingSampling/issues
+Config/roxygen2/version: 8.0.0

@@ -1,20 +1,53 @@
 #' @export
+#'
+#' @title
+#' Second-Order Inclusion Probabilities
+#' @description
+#' Computes the matrix of second-order inclusion probabilities
+#' \eqn{\pi_{kl} = P(k \in s \text{ and } l \in s)} for all pairs of units
+#' in a finite population of size \code{N} under a fixed-size sampling design.
+#' @return
+#' An \code{N x N} matrix where entry \eqn{(k, l)} is the probability that
+#' both units \eqn{k} and \eqn{l} are included in the same sample. Diagonal
+#' entries \eqn{(k,k)} equal the first-order inclusion probability \eqn{\pi_k}.
+#' @details
+#' The second-order inclusion probabilities are needed to compute the exact
+#' Horvitz-Thompson variance estimator and the Sen-Yates-Grundy variance
+#' estimator. This function enumerates the full sampling support via
+#' \code{\link{Ik}} and is therefore only feasible for small populations
+#' (\code{N <= 15}).
+#' @author Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
+#' @param N Population size. Keep small (recommended \code{N <= 15}) due to
+#'   the combinatorial enumeration of all possible samples.
+#' @param n Sample size.
+#' @param p Vector of probabilities for each possible sample in the support.
+#'   Must sum to 1.
+#'
+#' @references
+#' Sarndal, C-E. and Swensson, B. and Wretman, J. (1992),
+#' \emph{Model Assisted Survey Sampling}. Springer.\cr
+#' Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas
+#' y estimacion de parametros}. Editorial Universidad Santo Tomas.
+#'
+#' @seealso \code{\link{Pik}}, \code{\link{Deltakl}}, \code{\link{VarHT}}
+#'
+#' @examples
+#' U <- c("Yves", "Ken", "Erik", "Sharon", "Leslie")
+#' N <- length(U)
+#' n <- 2
+#' p <- c(0.13, 0.2, 0.15, 0.1, 0.15, 0.04, 0.02, 0.06, 0.07, 0.08)
+#' sum(p)
+#' # Second-order inclusion probabilities
+#' Pikl(N, n, p)
 
-Pikl <- function(N,n,p){
-# The support
-Sam <- Ik(N,n)
-# Two columns for index k and index l
-Ind <- OrderWR(N,2)
-# Creation of the indicator vectors k and l
-K <- matrix(c(Sam[,Ind]),ncol=2)
-L <- t(t(K[,1])*K[,2])
-# Vectors of indicators k and l
-# The first column is I11, the second is I12, etc..
-Ikl <- matrix(c(L),ncol=nrow(Ind))
-M <- p*Ikl
-#Sum of the probabilities by column
-O <- apply(M,2,sum)
-# Creation of the matrix Pikl
-P <- matrix(c(O),ncol=N)
-return(P)
+Pikl <- function(N, n, p) {
+  Sam  <- Ik(N, n)
+  Ind  <- OrderWR(N, 2)
+  K    <- matrix(c(Sam[, Ind]), ncol = 2)
+  L    <- t(t(K[, 1]) * K[, 2])
+  Ikl  <- matrix(c(L), ncol = nrow(Ind))
+  M    <- p * Ikl
+  O    <- apply(M, 2, sum)
+  P    <- matrix(c(O), ncol = N)
+  return(P)
 }

@@ -7,21 +7,26 @@
 E.UC(S, PSU, dk, y)
 }
 \arguments{
-\item{S}{Vector identifying the membership to the strata of each unit in selected sample.}
+\item{S}{Vector identifying the stratum membership of each unit in the
+selected sample.}
 
-\item{PSU}{Vector identifying the membership to the strata of 
-each unit in the population.}
+\item{PSU}{Vector identifying the PSU membership of each unit in the
+selected sample.}
 
 \item{dk}{Sampling weights of the units in the sample.}
 
-\item{y}{Vector, matrix or data frame containig the recollected 
-information of the variables of interest for every unit in the 
-selected sample.}
+\item{y}{Vector, matrix or data frame containing the values of the
+variables of interest for every unit in the selected sample.}
 }
 \value{
-This function returns the estimation of the population total of 
-every single variable of interest, its estimated standard error 
-and its estimated coefficient of variation.
+A matrix with four rows and one column per variable of interest:
+\itemize{
+  \item \code{Estimation}: Estimated population total.
+  \item \code{Standard Error}: Estimated standard error using the Ultimate
+    Cluster approximation.
+  \item \code{CVE}: Estimated coefficient of variation (in percentage).
+  \item \code{DEFF}: Design effect with respect to simple random sampling.
+}
 }
 \description{
 This function computes a weighted estimator of the population total and
@@ -31,8 +36,11 @@ declare the variables of interest, the primary sampling units, the strata, and
 the sampling weights for every singlt unit in the sample.
 }
 \details{
-The function returns a data matrix whose columns correspond to 
-the estimated parameters of the variables of interest.
+The Ultimate Cluster variance approximation collapses the variance
+estimation to the first stage of selection. For each stratum, the
+weighted total contribution of each PSU is computed, and the variance
+is estimated from the variability among those PSU contributions. This
+approximation is conservative but robust across many multi-stage designs.
 }
 \examples{
 
@@ -173,5 +181,5 @@ Gutierrez, H. A. (2009), \emph{Estrategias de muestreo: Diseno de encuestas y es
 \code{\link{E.2SI}}
 }
 \author{
-Hsugo Andres Gutierrez Rojas <hugogutierrez at gmail.com>
+Hugo Andres Gutierrez Rojas <hagutierrezro at gmail.com>
 }
