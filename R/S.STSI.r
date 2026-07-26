@@ -56,8 +56,8 @@
 #' dim(data)
 
 S.STSI <- function(S, Nh, nh) {
-  S   <- as.factor(S)
-  S   <- as.factor(as.integer(S))
+  S   <- factor(S, levels = unique(S))
+  S   <- as.integer(S)
   cum <- cumsum(nh)
   sam <- matrix(0, sum(nh))
   for (k in 1:length(nh)) {
